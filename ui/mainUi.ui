@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1080</width>
-    <height>637</height>
+    <width>977</width>
+    <height>526</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -349,7 +349,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1080</width>
+     <width>977</width>
      <height>22</height>
     </rect>
    </property>
@@ -358,22 +358,23 @@
      <string>File</string>
     </property>
     <addaction name="actionOpen"/>
-    <addaction name="actionDelete_Item"/>
-    <addaction name="actionDelete_All"/>
+    <addaction name="actionOpenFolder"/>
+    <addaction name="actionRemoveSelected"/>
+    <addaction name="actionRemoveAll"/>
    </widget>
    <widget class="QMenu" name="menuAction">
     <property name="title">
      <string>Merge</string>
     </property>
-    <addaction name="actionMerge_2"/>
-    <addaction name="actionMerge_All"/>
+    <addaction name="actionMergeSelected"/>
+    <addaction name="actionMergeAll"/>
    </widget>
    <widget class="QMenu" name="menuCompress">
     <property name="title">
      <string>Compress</string>
     </property>
-    <addaction name="actionCompress_Selected"/>
-    <addaction name="actionCompress_All"/>
+    <addaction name="actionCompressSelected"/>
+    <addaction name="actionCompressAll"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuAction"/>
@@ -390,34 +391,39 @@
     <string>Merge</string>
    </property>
   </action>
-  <action name="actionMerge_2">
+  <action name="actionMergeSelected">
    <property name="text">
-    <string>Merge Selected</string>
+    <string>Merge</string>
    </property>
   </action>
-  <action name="actionMerge_All">
+  <action name="actionMergeAll">
    <property name="text">
     <string>Merge All</string>
    </property>
   </action>
-  <action name="actionCompress_Selected">
+  <action name="actionCompressSelected">
    <property name="text">
-    <string>Compress Selected</string>
+    <string>Compress</string>
    </property>
   </action>
-  <action name="actionCompress_All">
+  <action name="actionCompressAll">
    <property name="text">
     <string>Compress All</string>
    </property>
   </action>
-  <action name="actionDelete_Item">
+  <action name="actionRemoveSelected">
    <property name="text">
-    <string>Remove Selected</string>
+    <string>Remove</string>
    </property>
   </action>
-  <action name="actionDelete_All">
+  <action name="actionRemoveAll">
    <property name="text">
     <string>Remove All</string>
+   </property>
+  </action>
+  <action name="actionOpenFolder">
+   <property name="text">
+    <string>Open Folder</string>
    </property>
   </action>
  </widget>

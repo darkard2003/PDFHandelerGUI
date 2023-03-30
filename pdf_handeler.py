@@ -1,7 +1,7 @@
 import os
 import sys
 from PyQt5 import QtWidgets, uic, QtGui
-from pdfHandeler import compressPdf, mergePdf
+from pdf import compressPdf, mergePdf
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -9,7 +9,7 @@ class MainWindow(QtWidgets.QMainWindow):
         super(MainWindow, self).__init__()
 
         uic.loadUi("./ui/mainUi.ui", self)
-        self.setWindowIcon(QtGui.QIcon('./resources/icon.png'))
+        self.setWindowIcon(QtGui.QIcon("./resources/icon.ico"))
 
         self.pdfs = {}
         self.compressedPdfs = {}
@@ -18,6 +18,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setDefaultFolders()
         self.connectButtons()
         self.validateDirs()
+        self.connectActions()
 
     def connectButtons(self):
         self.removeButton.clicked.connect(self.removeItem)
@@ -29,6 +30,16 @@ class MainWindow(QtWidgets.QMainWindow):
         self.mergeSelectedButton.clicked.connect(self.mergeSelectedAction)
         self.compressAllButton.clicked.connect(self.compressAll)
         self.compressSelectedButton.clicked.connect(self.compressSelected)
+
+    def connectActions(self):
+        self.actionOpen.triggered.connect(self.addItem)
+        self.actionOpenFolder.triggered.connect(self.addFolder)
+        self.actionRemoveSelected.triggered.connect(self.removeItem)
+        self.actionRemoveAll.triggered.connect(self.removeAll)
+        self.actionMergeSelected.triggered.connect(self.mergeSelectedAction)
+        self.actionMergeAll.triggered.connect(self.mergePdfAction)
+        self.actionCompressSelected.triggered.connect(self.compressSelected)
+        self.actionCompressAll.triggered.connect(self.compressAll)
 
     def setDefaultFolders(self):
         self.defaultFiledialogOpenLocation = os.path.join(
@@ -221,8 +232,9 @@ class MainWindow(QtWidgets.QMainWindow):
             self.compressedListView.addItem(outputFilename)
 
 
-app = QtWidgets.QApplication(sys.argv)
+if __name__ == "__main__":
+    app = QtWidgets.QApplication(sys.argv)
 
-myWindow = MainWindow()
-myWindow.show()
-sys.exit(app.exec())
+    myWindow = MainWindow()
+    myWindow.show()
+    sys.exit(app.exec())
