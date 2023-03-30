@@ -1,6 +1,6 @@
 import os
 import sys
-from PyQt5 import QtWidgets, uic
+from PyQt5 import QtWidgets, uic, QtGui
 from pdfHandeler import compressPdf, mergePdf
 
 
@@ -9,6 +9,7 @@ class MainWindow(QtWidgets.QMainWindow):
         super(MainWindow, self).__init__()
 
         uic.loadUi("./ui/mainUi.ui", self)
+        self.setWindowIcon(QtGui.QIcon('./resources/icon.png'))
 
         self.pdfs = {}
         self.compressedPdfs = {}
