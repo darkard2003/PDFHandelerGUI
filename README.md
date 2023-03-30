@@ -6,5 +6,5 @@ A GUI based pdf handeler to compress and merge pdfs. It uses [PyPDF2](https://py
 2. Go to [ghostscript download page](https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/) and download ghostscript
 3. Cd into the folder
 4. run ```pip intall -r requirements.txt```
-4. run ```pip install pypdf2```
-5. run ```python3 main.py```
+5. run ```pip install pypdf2```
+6. run ```python3 main.py```
