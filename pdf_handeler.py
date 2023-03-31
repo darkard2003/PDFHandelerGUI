@@ -11,7 +11,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         uic.loadUi("./ui/mainUi.ui", self)
 
-        self.resize(1500, 1000)
+        self.showMaximized()
         self.setWindowIcon(QtGui.QIcon("./resources/icon.ico"))
 
         self.pdfs = {}

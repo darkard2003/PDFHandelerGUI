@@ -22,7 +22,7 @@
    </font>
   </property>
   <property name="windowTitle">
-   <string>PdfMerger</string>
+   <string>pdf Handeler Gui</string>
   </property>
   <property name="windowIcon">
    <iconset>
@@ -183,7 +183,7 @@
          <widget class="QListWidget" name="pdfListView">
           <property name="font">
            <font>
-            <pointsize>12</pointsize>
+            <pointsize>10</pointsize>
             <stylestrategy>PreferAntialias</stylestrategy>
            </font>
           </property>
@@ -255,7 +255,7 @@
          <widget class="QListWidget" name="compressedListView">
           <property name="font">
            <font>
-            <pointsize>12</pointsize>
+            <pointsize>10</pointsize>
             <stylestrategy>PreferAntialias</stylestrategy>
            </font>
           </property>
@@ -318,7 +318,7 @@
          <widget class="QListWidget" name="mergedListView">
           <property name="font">
            <font>
-            <pointsize>12</pointsize>
+            <pointsize>10</pointsize>
             <stylestrategy>PreferAntialias</stylestrategy>
            </font>
           </property>
