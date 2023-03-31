@@ -4,13 +4,22 @@ from datetime import datetime
 
 
 def compressPdf(inputFile: str, outputFile: str):
-    inputFile = f"\"{inputFile}\""
-    outputFile = f"\"{outputFile}\""
-    os.system(
-        f"gswin64c -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 \
-                -dPDFSETTINGS=/screen -dNOPAUSE -dBATCH \
-                -sOutputFile={outputFile} {inputFile}"
+    inputFile = f'"{inputFile}"'
+    outputFile = f'"{outputFile}"'
+
+    command = (
+        "gswin64c.exe "
+        "-sDEVICE=pdfwrite "
+        "-dCompatibilityLevel=1.4 "
+        "-dPDFSETTINGS=/screen "
+        "-dNOPAUSE "
+        "-dBATCH "
+        f"-sOutputFile={outputFile} "
+        f"{inputFile} "
     )
+
+    os.system(command)
+
 
 
 def mergePdf(filenames, outputdir: str) -> str:

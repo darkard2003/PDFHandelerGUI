@@ -1,3 +1,4 @@
+import threading
 import os
 import sys
 from PyQt5 import QtWidgets, uic, QtGui
@@ -9,37 +10,96 @@ class MainWindow(QtWidgets.QMainWindow):
         super(MainWindow, self).__init__()
 
         uic.loadUi("./ui/mainUi.ui", self)
+
+        self.resize(1500, 1000)
         self.setWindowIcon(QtGui.QIcon("./resources/icon.ico"))
 
         self.pdfs = {}
         self.compressedPdfs = {}
         self.mergedPdfs = {}
 
+        self.pdfListView.itemClicked.connect(self.onPdfItemClicked)
+        self.compressedListView.itemClicked.connect(self.onCompressedItemClicked)
+        self.mergedListView.itemClicked.connect(self.onMergedItemClicked)
+
         self.setDefaultFolders()
         self.connectButtons()
         self.validateDirs()
-        self.connectActions()
+
+    def toggle_selection(
+        self,
+        listWidget: QtWidgets.QListWidget,
+        btn: QtWidgets.QPushButton,
+    ):
+        selectedItems = listWidget.selectedItems()
+
+        if len(selectedItems) == 0:
+            listWidget.selectAll()
+        else:
+            listWidget.clearSelection()
+
+        self.setButtonLabel(listWidget, btn)
+
+    def setButtonLabel(
+        self,
+        listWidget: QtWidgets.QListWidget,
+        btn: QtWidgets.QPushButton,
+    ):
+        selectedItems = listWidget.selectedItems()
+        if len(selectedItems) == 0:
+            btn.setText("Select All")
+        else:
+            btn.setText("Clear Selection")
 
     def connectButtons(self):
         self.removeButton.clicked.connect(self.removeItem)
-        self.removeAllButton.clicked.connect(self.removeAll)
         self.addItemButton.clicked.connect(self.addItem)
         self.addFolderButton.clicked.connect(self.addFolder)
-        self.mergePdfButton.clicked.connect(self.mergePdfAction)
-        self.mergeCompressedButton.clicked.connect(self.mergeCompressedAction)
         self.mergeSelectedButton.clicked.connect(self.mergeSelectedAction)
-        self.compressAllButton.clicked.connect(self.compressAll)
         self.compressSelectedButton.clicked.connect(self.compressSelected)
 
-    def connectActions(self):
-        self.actionOpen.triggered.connect(self.addItem)
-        self.actionOpenFolder.triggered.connect(self.addFolder)
-        self.actionRemoveSelected.triggered.connect(self.removeItem)
-        self.actionRemoveAll.triggered.connect(self.removeAll)
-        self.actionMergeSelected.triggered.connect(self.mergeSelectedAction)
-        self.actionMergeAll.triggered.connect(self.mergePdfAction)
-        self.actionCompressSelected.triggered.connect(self.compressSelected)
-        self.actionCompressAll.triggered.connect(self.compressAll)
+        self.pdfListViewToggleSelection.clicked.connect(
+            lambda: self.toggle_selection(
+                self.pdfListView,
+                self.pdfListViewToggleSelection,
+            )
+        )
+        self.compressedListViewToggleSelection.clicked.connect(
+            lambda: self.toggle_selection(
+                self.compressedListView,
+                self.compressedListViewToggleSelection,
+            )
+        )
+        self.mergedListViewToggleSelection.clicked.connect(
+            lambda: self.toggle_selection(
+                self.mergedListView,
+                self.mergedListViewToggleSelection,
+            )
+        )
+
+    def onPdfItemClicked(self, item):
+        self.setButtonLabel(
+            self.pdfListView,
+            self.pdfListViewToggleSelection,
+        )
+        self.onItemClicked(item)
+
+    def onCompressedItemClicked(self, item):
+        self.setButtonLabel(
+            self.compressedListView,
+            self.compressedListViewToggleSelection,
+        )
+        self.onItemClicked(item)
+
+    def onMergedItemClicked(self, item):
+        self.setButtonLabel(
+            self.mergedListView,
+            self.mergedListViewToggleSelection,
+        )
+        self.onItemClicked(item)
+
+    def onItemClicked(self, item):
+        pass
 
     def setDefaultFolders(self):
         self.defaultFiledialogOpenLocation = os.path.join(
@@ -183,21 +243,15 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def compressAll(self):
         inputFiles = [
-            self.pdfListView.item(i).text() for i in range(self.pdfListView.count())
+            self.pdfs[self.pdfListView.item(i).text()]
+            for i in range(self.pdfListView.count())
         ]
 
-        for inputFile in inputFiles:
-            inputFilePath = self.pdfs[inputFile]
-            outputFilename = f"{os.path.splitext(inputFile)[0]}_compressed.pdf"
-            outputFilePath = os.path.join(
-                self.defaultCompressedFolder,
-                outputFilename,
-            )
+        if len(inputFiles) == 0:
+            return
 
-            compressPdf(inputFilePath, outputFilePath)
-
-            self.compressedPdfs[outputFilename] = outputFilePath
-            self.compressedListView.addItem(outputFilename)
+        t = threading.Thread(target=self.compress, args=(inputFiles,))
+        t.start()
 
     def compressSelected(self):
         pdfSelected = [
@@ -218,7 +272,11 @@ class MainWindow(QtWidgets.QMainWindow):
         if len(allSelected) == 0:
             return
 
-        for inputFile in allSelected:
+        t = threading.Thread(target=self.compress, args=(allSelected,))
+        t.start()
+
+    def compress(self, inputFiles):
+        for inputFile in inputFiles:
             inputFileBaseName = os.path.basename(inputFile)
             outputFilename = f"{os.path.splitext(inputFileBaseName)[0]}_compressed.pdf"
             outputFilePath = os.path.join(
