@@ -22,7 +22,7 @@
    </font>
   </property>
   <property name="windowTitle">
-   <string>pdf Handeler Gui</string>
+   <string>PdfMerger</string>
   </property>
   <property name="windowIcon">
    <iconset>
@@ -73,6 +73,35 @@
         <property name="flat">
          <bool>true</bool>
         </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="compressionLevelSelector">
+        <item>
+         <property name="text">
+          <string>default</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>screen</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>ebook</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>printer</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>prepress</string>
+         </property>
+        </item>
        </widget>
       </item>
       <item>
@@ -170,7 +199,7 @@
            <widget class="QLabel" name="label">
             <property name="font">
              <font>
-              <pointsize>12</pointsize>
+              <pointsize>10</pointsize>
               <stylestrategy>PreferAntialias</stylestrategy>
              </font>
             </property>
@@ -201,7 +230,7 @@
          <widget class="QListWidget" name="pdfListView">
           <property name="font">
            <font>
-            <pointsize>10</pointsize>
+            <pointsize>12</pointsize>
             <stylestrategy>PreferAntialias</stylestrategy>
            </font>
           </property>
@@ -245,7 +274,7 @@
            <widget class="QLabel" name="label_2">
             <property name="font">
              <font>
-              <pointsize>12</pointsize>
+              <pointsize>10</pointsize>
               <stylestrategy>PreferAntialias</stylestrategy>
              </font>
             </property>
@@ -257,6 +286,16 @@
             </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="openCompressedFolder">
+            <property name="text">
+             <string>open Folder</string>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
             </property>
            </widget>
           </item>
@@ -276,7 +315,7 @@
          <widget class="QListWidget" name="compressedListView">
           <property name="font">
            <font>
-            <pointsize>10</pointsize>
+            <pointsize>12</pointsize>
             <stylestrategy>PreferAntialias</stylestrategy>
            </font>
           </property>
@@ -311,7 +350,7 @@
            <widget class="QLabel" name="label_3">
             <property name="font">
              <font>
-              <pointsize>12</pointsize>
+              <pointsize>10</pointsize>
               <stylestrategy>PreferAntialias</stylestrategy>
              </font>
             </property>
@@ -323,6 +362,16 @@
             </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="openMergedFolder">
+            <property name="text">
+             <string>open Folder</string>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
             </property>
            </widget>
           </item>
@@ -342,7 +391,7 @@
          <widget class="QListWidget" name="mergedListView">
           <property name="font">
            <font>
-            <pointsize>10</pointsize>
+            <pointsize>12</pointsize>
             <stylestrategy>PreferAntialias</stylestrategy>
            </font>
           </property>

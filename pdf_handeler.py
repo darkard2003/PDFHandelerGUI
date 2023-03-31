@@ -1,6 +1,8 @@
+import subprocess
 import threading
 import os
 import sys
+from typing import Literal
 from PyQt5 import QtWidgets, uic, QtGui
 from pdf import compressPdf, mergePdf
 
@@ -11,7 +13,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         uic.loadUi("./ui/mainUi.ui", self)
 
-        self.showMaximized()
+        self.resize(1650, 800)
         self.setWindowIcon(QtGui.QIcon("./resources/icon.ico"))
 
         self.pdfs = {}
@@ -21,6 +23,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.pdfListView.itemClicked.connect(self.onPdfItemClicked)
         self.compressedListView.itemClicked.connect(self.onCompressedItemClicked)
         self.mergedListView.itemClicked.connect(self.onMergedItemClicked)
+
+        self.pdfListView.itemDoubleClicked.connect(self.onPdfItemClicked)
+        self.compressedListView.itemDoubleClicked.connect(self.onCompressedItemClicked)
+        self.mergedListView.itemDoubleClicked.connect(self.onMergedItemClicked)
 
         self.setDefaultFolders()
         self.connectButtons()
@@ -51,12 +57,41 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             btn.setText("Clear Selection")
 
+    def updateButtonLabels(self):
+        self.setButtonLabel(self.pdfListView, self.pdfListViewToggleSelection)
+        self.setButtonLabel(
+            self.compressedListView,
+            self.compressedListViewToggleSelection,
+        )
+        self.setButtonLabel(
+            self.mergedListView,
+            self.mergedListViewToggleSelection,
+        )
+
     def connectButtons(self):
         self.removeButton.clicked.connect(self.removeItem)
         self.addItemButton.clicked.connect(self.addItem)
         self.addFolderButton.clicked.connect(self.addFolder)
         self.mergeSelectedButton.clicked.connect(self.mergeSelectedAction)
         self.compressSelectedButton.clicked.connect(self.compressSelected)
+
+        self.openCompressedFolder.clicked.connect(
+            lambda: subprocess.run(
+                [
+                    "explorer",
+                    self.defaultCompressedFolder,
+                ]
+            )
+        )
+
+        self.openMergedFolder.clicked.connect(
+            lambda: subprocess.run(
+                [
+                    "explorer",
+                    self.defaultMergedFolder,
+                ]
+            )
+        )
 
         self.pdfListViewToggleSelection.clicked.connect(
             lambda: self.toggle_selection(
@@ -143,16 +178,7 @@ class MainWindow(QtWidgets.QMainWindow):
         for item in items:
             row = self.mergedListView.row(item)
             self.mergedListView.takeItem(row)
-
-    def removeAll(self):
-        for _ in range(self.pdfListView.count()):
-            self.pdfListView.takeItem(0)
-
-        for _ in range(self.compressedListView.count()):
-            self.compressedListView.takeItem(0)
-
-        for _ in range(self.mergedListView.count()):
-            self.mergedListView.takeItem(0)
+        self.updateButtonLabels()
 
     def addItem(self):
         res = QtWidgets.QFileDialog.getOpenFileNames(
@@ -190,32 +216,6 @@ class MainWindow(QtWidgets.QMainWindow):
             self.pdfs[item] = os.path.join(folderName, item)
             self.pdfListView.addItem(item)
 
-    def mergePdfAction(self):
-        items = [
-            self.pdfs[self.pdfListView.item(row).text()]
-            for row in range(self.pdfListView.count())
-        ]
-        if len(items) == 0:
-            return
-        mergedFilename = mergePdf(items, self.defaultMergedFolder)
-        self.mergedListView.addItem(mergedFilename)
-        self.mergedPdfs[mergedFilename] = os.path.join(
-            self.defaultMergedFolder, mergedFilename
-        )
-
-    def mergeCompressedAction(self):
-        items = [
-            self.compressedPdfs[self.compressedListView.item(row).text()]
-            for row in range(self.compressedListView.count())
-        ]
-        if len(items) == 0:
-            return
-        mergedFilename = mergePdf(items, self.defaultMergedFolder)
-        self.mergedListView.addItem(mergedFilename)
-        self.mergedPdfs[mergedFilename] = os.path.join(
-            self.defaultMergedFolder, mergedFilename
-        )
-
     def mergeSelectedAction(self):
         pdfSelected = [
             self.pdfs[item.text()] for item in self.pdfListView.selectedItems()
@@ -241,18 +241,6 @@ class MainWindow(QtWidgets.QMainWindow):
             self.defaultMergedFolder, mergedFilename
         )
 
-    def compressAll(self):
-        inputFiles = [
-            self.pdfs[self.pdfListView.item(i).text()]
-            for i in range(self.pdfListView.count())
-        ]
-
-        if len(inputFiles) == 0:
-            return
-
-        t = threading.Thread(target=self.compress, args=(inputFiles,))
-        t.start()
-
     def compressSelected(self):
         pdfSelected = [
             self.pdfs[item.text()] for item in self.pdfListView.selectedItems()
@@ -269,13 +257,35 @@ class MainWindow(QtWidgets.QMainWindow):
 
         allSelected = pdfSelected + compressedSelected + mergedSelected
 
+        compressionLevel = self.compressionLevelSelector.currentText()
+        print(compressionLevel)
+
         if len(allSelected) == 0:
             return
 
-        t = threading.Thread(target=self.compress, args=(allSelected,))
+        compressionLevel = self.compressionLevelSelector.currentText()
+        print(compressionLevel)
+
+        t = threading.Thread(
+            target=self.compress,
+            args=(
+                allSelected,
+                compressionLevel,
+            ),
+        )
         t.start()
 
-    def compress(self, inputFiles):
+    def compress(
+        self,
+        inputFiles,
+        compressionLevel: Literal[
+            "default",
+            "screen",
+            "ebook",
+            "printer",
+            "prepress",
+        ] = "default",
+    ):
         for inputFile in inputFiles:
             inputFileBaseName = os.path.basename(inputFile)
             outputFilename = f"{os.path.splitext(inputFileBaseName)[0]}_compressed.pdf"
@@ -284,7 +294,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 outputFilename,
             )
 
-            compressPdf(inputFile, outputFilePath)
+            compressPdf(inputFile, outputFilePath, compressionLevel)
 
             self.compressedPdfs[outputFilename] = outputFilePath
             self.compressedListView.addItem(outputFilename)
